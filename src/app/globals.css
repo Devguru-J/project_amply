@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Clubtable — Design Tokens (Underground Club Vibe)
+   ============================================================ */
+@layer base {
+  :root {
+    /* Always-dark — no light scheme. */
+    --background: 240 8% 4%;
+    --foreground: 0 0% 96%;
+
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 240 8% 6%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 188 95% 53%;          /* cyan glow */
+    --primary-foreground: 240 10% 4%;
+
+    --secondary: 330 80% 60%;        /* magenta glow */
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 240 6% 12%;
+    --muted-foreground: 240 5% 56%;
+
+    --accent: 188 95% 53%;
+    --accent-foreground: 240 10% 4%;
+
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 6% 14%;
+    --input: 240 6% 12%;
+    --ring: 188 95% 53%;
+
+    --radius: 1.25rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html, body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsla(188, 95%, 53%, 0.12), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 100% 100%, hsla(330, 80%, 60%, 0.10), transparent 60%),
+      hsl(var(--background));
+    min-height: 100dvh;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsla(188, 95%, 53%, 0.25);
+    color: hsl(var(--foreground));
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 100%, 0.08);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsla(0, 0%, 100%, 0.16);
+  }
+}
+
+@layer components {
+  /* Fixed grain overlay — never on scroll containers. */
+  .grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+  }
+
+  /* Doppelrand outer shell */
+  .bezel-shell {
+    @apply rounded-[2rem] p-[6px] bg-white/[0.04] ring-1 ring-white/10
+           shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)];
+  }
+  .bezel-core {
+    @apply rounded-[calc(2rem-6px)] bg-card/80 ring-1 ring-white/5
+           shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)];
+  }
+
+  /* Glow utility */
+  .glow-cyan {
+    box-shadow:
+      0 0 0 1px hsla(188, 95%, 53%, 0.25),
+      0 0 24px -4px hsla(188, 95%, 53%, 0.45),
+      inset 0 1px 0 0 rgba(255,255,255,0.08);
+  }
+  .glow-magenta {
+    box-shadow:
+      0 0 0 1px hsla(330, 80%, 60%, 0.25),
+      0 0 24px -4px hsla(330, 80%, 60%, 0.45),
+      inset 0 1px 0 0 rgba(255,255,255,0.08);
+  }
+
+  /* Eyebrow tag */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1
+           text-[10px] uppercase tracking-[0.22em] font-medium
+           bg-white/5 ring-1 ring-white/10 text-foreground/80;
+  }
+
+  /* Aurora orb — large blurred radial blobs for hero */
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* Hairline divider */
+  .hairline {
+    background: linear-gradient(
+      to right,
+      transparent,
+      hsla(0, 0%, 100%, 0.14) 20%,
+      hsla(0, 0%, 100%, 0.14) 80%,
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Nested island button (CTA-in-CTA arrow) */
+  .island-arrow {
+    @apply ml-2 flex h-8 w-8 items-center justify-center rounded-full
+           bg-black/20 ring-1 ring-white/10
+           transition-transform duration-500
+           group-hover:translate-x-0.5 group-hover:-translate-y-px group-hover:scale-105;
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* Marquee container for live equalizer-style text */
+  .live-strip {
+    background: linear-gradient(
+      90deg,
+      hsla(188, 95%, 53%, 0.0),
+      hsla(188, 95%, 53%, 0.5),
+      hsla(330, 80%, 60%, 0.5),
+      hsla(188, 95%, 53%, 0.5),
+      hsla(188, 95%, 53%, 0.0)
+    );
+    background-size: 200% 100%;
+    animation: shimmer 5s linear infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Hardware-accelerated motion-friendly hide/show */
+  .gpu {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+}
