@@ -5,6 +5,18 @@
 소셜 뮤직 룸 — 사람들이 모여 한 명이 DJ가 되어 음악을 트는 작은 클럽.
 Turntable.fm / Plug.dj 영감, Next.js + Supabase + YouTube IFrame Player로 구현한 MVP.
 
+## 📚 문서
+
+| | |
+| --- | --- |
+| [docs/PRODUCT.md](./docs/PRODUCT.md) | 제품 정의, 핵심 원칙, MVP 범위 |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템·데이터 모델·RPC 카탈로그·Realtime |
+| [docs/DESIGN.md](./docs/DESIGN.md) | 무드, 토큰, 컴포넌트 패턴, 모션, 안티패턴 |
+| [docs/SETUP.md](./docs/SETUP.md) | 로컬 실행 정확한 절차, Vercel 배포 |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | Phase 1~6 단계별 우선순위 |
+| [docs/DECISIONS.md](./docs/DECISIONS.md) | 주요 결정과 근거 (ADR 라이트) |
+| [docs/CHANGELOG.md](./docs/CHANGELOG.md) | 한 줄 변경 기록 |
+
 ---
 
 ## 핵심 컨셉
