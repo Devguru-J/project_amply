@@ -113,7 +113,7 @@ function LoginInner() {
           href="/"
           className="font-mono text-[11px] tracking-[0.3em] uppercase text-foreground/50 hover:text-foreground transition"
         >
-          ← CLUBTABLE
+          ← AMPLY
         </Link>
 
         <div className="mt-6 bezel-shell">

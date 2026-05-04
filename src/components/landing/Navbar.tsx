@@ -17,9 +17,9 @@ export function Navbar() {
               className="px-4 py-2 text-sm font-semibold tracking-tight text-foreground"
             >
               <span className="font-mono text-[11px] tracking-[0.3em] uppercase text-foreground/60 mr-2">
-                CT
+                AM
               </span>
-              Clubtable
+              Amply
             </Link>
             <span className="hidden md:block h-4 w-px bg-white/10 mx-1" />
             <Link

@@ -1,4 +1,4 @@
-# Clubtable
+# Amply
 
 > 같이 듣는 순간, 방이 된다.
 

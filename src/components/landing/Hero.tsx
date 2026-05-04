@@ -36,7 +36,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 max-w-xl text-pretty text-base md:text-lg text-foreground/70 leading-relaxed animate-fade-up [animation-delay:220ms] gpu">
-            Clubtable은 작은 클럽처럼 사람들이 모여 한 명이 DJ가 되어 음악을 트는 공간입니다.
+            Amply는 작은 클럽처럼 사람들이 모여 한 명이 DJ가 되어 음악을 트는 공간입니다.
             대기열에 줄을 서고, 채팅하고, 좋아요를 누르세요. 음악이 끝나면 다음 차례로 자연스럽게 넘어갑니다.
           </p>
 

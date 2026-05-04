@@ -1,5 +1,5 @@
 -- ============================================================
--- Clubtable — Supabase schema
+-- Amply — Supabase schema
 --   Run this in: Supabase Studio → SQL editor → New query
 --   (Idempotent: safe to re-run.)
 -- ============================================================

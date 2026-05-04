@@ -6,7 +6,7 @@ export function Footer() {
         <div className="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-foreground/50">
-              CT · CLUBTABLE
+              AM · AMPLY
             </span>
             <span className="text-foreground/40 text-sm">같이 듣는 순간, 방이 된다.</span>
           </div>
