@@ -11,10 +11,25 @@
 
 ## 2. SQL 스키마 적용
 
+스키마 정본은 `supabase/migrations/` 디렉토리. baseline 한 번 적용하면 끝.
+
+**가장 빠른 방법 (SQL Editor):**
+
 1. 좌측 사이드바 → **SQL Editor** → **New query**
-2. 로컬 `supabase/schema.sql` 통째로 복사 → 붙여넣기 → **Run**
+2. 로컬 `supabase/migrations/20260504000000_initial_schema.sql` 통째로 복사
+   → 붙여넣기 → **Run**
 3. 결과: "Success. No rows returned"
 4. (확인) **Table Editor** 들어가면 7개 테이블 보임
+
+**CLI 워크플로 (선택, 향후 마이그레이션 추가용):**
+
+```bash
+supabase link --project-ref <project-ref>
+supabase migration repair --status applied 20260504000000
+# 이후 변경: supabase migration new <name> → supabase db push
+```
+
+자세한 워크플로는 `supabase/README.md` 참고.
 
 ## 3. Auth Providers
 
@@ -74,14 +89,44 @@ npm run dev
 | 매직링크 메일이 안 옴 | Email provider OFF 또는 SMTP 미설정 | Free tier는 기본 SMTP 사용. spam 폴더 확인 |
 | YouTube 영상이 안 뜸 | 임베드 차단된 영상 | 다른 영상으로 시도 (예: `dQw4w9WgXcQ`) |
 | 트랙이 끝나도 다음으로 안 넘어감 | 현재 DJ 클라이언트가 닫힘 | 누구든 **스킵** 클릭 (RPC가 advance) |
-| 채팅 메시지가 다른 브라우저에 안 옴 | Realtime publication 누락 | `supabase/schema.sql` 마지막 do-block 다시 실행 |
+| 채팅 메시지가 다른 브라우저에 안 옴 | Realtime publication 누락 | `supabase/migrations/20260504000000_initial_schema.sql` 마지막 do-block 다시 실행 |
 
-## Vercel 배포 (선택)
+## Cloudflare Pages 배포
 
-1. GitHub `Devguru-J/project_amply` 를 Vercel에 import
-2. Project Settings → Environment Variables 3개 등록 (위와 동일)
-   - `NEXT_PUBLIC_SITE_URL` 만 배포 도메인으로 변경
-3. Supabase → Authentication → URL Configuration:
-   - Site URL: 배포 도메인
-   - Redirect URLs: `https://your-domain.com/api/auth/callback`
-4. Deploy
+운영 URL: https://project-amply.pages.dev (실제 사용 중)
+
+### 코드 준비
+이미 `package.json`에 `pages:build` 스크립트, `runtime = 'edge'` 선언,
+`@cloudflare/next-on-pages` devDep이 들어있다. 로컬 빌드 검증:
+
+```bash
+npm run pages:build
+# .vercel/output/static 생성되면 OK
+```
+
+### Cloudflare 대시보드 설정
+
+1. Cloudflare Dashboard → **Workers & Pages → Create → Pages → Connect to Git**
+2. GitHub `Devguru-J/project_amply` 선택
+3. Build settings:
+   - **Framework preset**: `Next.js`
+   - **Build command**: `npx @cloudflare/next-on-pages@1`
+   - **Build output directory**: `.vercel/output/static`
+4. Environment variables (Production + Preview 양쪽):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_SITE_URL` = `https://project-amply.pages.dev`
+   - `NODE_VERSION` = `20`
+5. **Save and Deploy**
+6. **첫 배포 후 즉시**: Settings → Functions → Compatibility flags
+   - Production + Preview 양쪽에 `nodejs_compat` 추가
+   - 빠뜨리면 SSR 라우트가 500 에러
+
+### Supabase Auth Redirect URL 등록
+- Supabase Dashboard → Authentication → URL Configuration
+- **Site URL**: `https://project-amply.pages.dev`
+- **Redirect URLs** (둘 다):
+  - `https://project-amply.pages.dev/api/auth/callback`
+  - `http://localhost:3000/api/auth/callback`
+
+⚠️ 경로는 `/api/auth/callback` (`/auth/callback` 아님). 혼동 주의.

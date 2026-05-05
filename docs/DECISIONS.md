@@ -5,6 +5,72 @@
 
 ---
 
+## D-008 · 마이그레이션은 Supabase CLI로 (Drizzle 채택 X)
+
+**날짜:** 2026-05-05
+**상태:** 채택
+
+스키마 변경 이력 관리에 Supabase CLI(`supabase migration new` / `db push`)를
+쓴다. Drizzle ORM은 도입하지 않는다.
+
+이 프로젝트의 스키마는 단순 테이블/컬럼 외에도 RLS 정책 15+개,
+SECURITY DEFINER RPC 함수, 트리거, Realtime publication 설정을 포함한다.
+Drizzle은 테이블/컬럼은 잘 다루지만 위 항목들은 결국 raw SQL로 작성해야
+하므로, Drizzle 스키마와 raw SQL 마이그레이션 두 시스템을 병행하게 된다.
+유지보수 부담만 늘어나고 RLS 우회 함정도 생긴다.
+
+Supabase CLI는 위 모든 것을 네이티브로 다루고, PR에 SQL diff가 그대로
+들어가서 리뷰가 쉽다. 첫 baseline은 기존 `schema.sql`을
+`supabase/migrations/20260504000000_initial_schema.sql`로 옮겨 보존한다.
+
+**대안:**
+- Drizzle ORM + drizzle-kit — 테이블 정의는 깔끔하지만 RLS/RPC가 raw SQL로
+  남아 통일성 깨짐. 쿼리 빌더로만 부분 도입은 가능하나 현재 supabase-js
+  RLS 기반 클라이언트와 충돌 위험.
+- Supabase 콘솔 SQL Editor 손편집 — 마이그레이션 이력이 git에 안 남음.
+- Prisma — Drizzle과 같은 한계 + heavier.
+
+**바꿀 트리거:**
+- 쿼리 복잡도가 높아지고 타입 안전성이 절실해지면 Drizzle을 *쿼리 빌더*
+  용도로 추가 도입 고려 (마이그레이션은 여전히 Supabase CLI).
+- 멀티 환경(dev/staging/prod) 분리하면 `supabase db diff` + branch 워크플로
+  도입.
+
+---
+
+## D-007 · 배포는 Cloudflare Pages (Vercel X)
+
+**날짜:** 2026-05-05
+**상태:** 채택
+
+Next.js 앱을 Cloudflare Pages에 배포한다. Vercel을 쓰지 않는다.
+
+비용 면에서 Cloudflare Pages가 무료 티어가 후하고(빌드/대역폭/요청 수),
+운영 비용을 0에 가깝게 시작 가능. Edge runtime + 한국 사용자 대상이라
+Cloudflare 네트워크의 PoP 분포도 유리.
+
+어댑터는 `@cloudflare/next-on-pages@1`을 쓴다. `@opennextjs/cloudflare`
+(Workers 타깃)도 검토했으나, Pages 워크플로가 더 단순하고 dashboard UX가
+직관적이어서 Pages를 선택. 어댑터 peer-dep 상한 때문에 Next 15.5.2로 핀.
+모든 SSR 라우트는 `export const runtime = 'edge'` 필요. Compatibility flag
+`nodejs_compat`을 Production + Preview 양쪽에 추가 필수.
+
+**대안:**
+- Vercel — Next.js 1급 지원, 프리뷰 URL 자동, 그러나 무료 티어 한계가
+  더 빠르게 옴. 개인 프로젝트에는 과한 의존.
+- Cloudflare Workers + `@opennextjs/cloudflare` — 더 신축적이고 ISR/Server
+  Actions 지원이 더 넓음. 다만 설정/디버깅이 한 단계 더 복잡함. 향후
+  필요 시 마이그레이션 가능.
+- 자체 호스팅 (Hetzner + Caddy + node) — 운영 부담 큼.
+
+**바꿀 트리거:**
+- next-on-pages가 Next.js 신규 기능(예: Partial Prerendering)에서 멈춰
+  있고 OpenNext가 따라가면 Workers + OpenNext로 전환.
+- 빌드 시간 / cold start가 사용자 체감으로 거슬리면 검토.
+- Vercel만 지원하는 기능(예: 특정 미들웨어 동작)이 필요해지면 검토.
+
+---
+
 ## D-006 · 서비스명: Amply
 
 **날짜:** 2026-05-04

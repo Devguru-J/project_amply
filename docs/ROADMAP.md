@@ -2,10 +2,11 @@
 
 > 큰 그림. 우선순위는 위에서 아래로. 한 단계씩 끝내고 다음으로.
 
-## 현재 위치 (2026-05-04)
+## 현재 위치 (2026-05-05)
 
-**Phase 0 · Scaffold 완료.**
-빌드 통과, 로컬에서 Supabase 연결만 하면 즉시 동작.
+**Phase 1 · MVP + Phase 2 · 배포 완료.**
+운영 URL: https://project-amply.pages.dev
+다음 자연스러운 단계: Phase 3 polish 또는 실사용 테스트.
 
 ## Phase 1 — Local Working MVP (지금)
 
@@ -20,15 +21,22 @@
 - [x] 채팅 (Postgres CDC)
 - [x] 좋아요/싫어요 (RPC 토글)
 - [x] Presence 접속자 패널
-- [ ] **수동 검증** — 두 브라우저로 시나리오 통과 (사용자 작업)
+- [x] **수동 검증** — 단일 브라우저 골든패스 (방 생성 → DJ 합류 → 트랙 재생 → 반응) 통과
 
-## Phase 2 — Vercel Deploy
+## Phase 2 — Cloudflare Pages 배포 ✅
 
-- [ ] Supabase 프로젝트 운영용으로 분리 (또는 단일 프로젝트로 OK)
-- [ ] Vercel 프로젝트 연결
-- [ ] 환경변수 등록 (`NEXT_PUBLIC_SUPABASE_URL`, `..._ANON_KEY`, `NEXT_PUBLIC_SITE_URL`)
-- [ ] Supabase Auth → Site URL / Redirect URL 운영 도메인 등록
-- [ ] 첫 배포 + 외부 사람 1명 초대해서 함께 듣기
+ADR D-007: Vercel 대신 Cloudflare Pages 채택.
+
+- [x] Cloudflare 어댑터 (`@cloudflare/next-on-pages`) 설치 + `pages:build` 스크립트
+- [x] Next.js 15.5.2 핀 (어댑터 peer-dep 호환)
+- [x] 4개 SSR 라우트에 `runtime = 'edge'` 선언
+- [x] Cloudflare Pages 프로젝트 연결 (GitHub Devguru-J/project_amply)
+- [x] 환경변수 등록 (`NEXT_PUBLIC_SUPABASE_URL`, `..._ANON_KEY`, `NEXT_PUBLIC_SITE_URL`, `NODE_VERSION=20`)
+- [x] Compatibility flag `nodejs_compat` 추가 (Production + Preview)
+- [x] Supabase Auth Redirect URL에 `/api/auth/callback` 등록 (운영 + 로컬)
+- [x] Supabase CLI 마이그레이션 워크플로 도입 (ADR D-008)
+- [x] 첫 배포 성공 — https://project-amply.pages.dev
+- [ ] 외부 사람 1명 초대해서 같이 듣기 (실사용 검증)
 
 ## Phase 3 — 사람들에게 보여주기 전 다듬기
 
