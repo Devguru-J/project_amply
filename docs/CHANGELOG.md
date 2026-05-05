@@ -4,6 +4,13 @@
 
 ## 2026-05-05
 
+- `docs` ROADMAP에 SOCIAL_ROOM_REVIEW 반영
+  - "현재 포커스" 섹션 + `→ [ ]` 진행 마커 도입
+  - Phase 3 → Review P0 (실사용 검증 직전 polish), 항목 재구성
+  - **Phase 3.5 신설** — RoomStage 1차 (Review P1, 2D 아바타 플로어)
+  - Phase 4 → Review P2 (오래 쓰게 만드는 기능), 분석/안전 항목 추가
+  - Phase 5 → Review P3 (차별화), Canvas/3D 옵션 명시
+  - "세션 워크플로" 섹션 추가 — 다음 작업 픽업 절차 표준화
 - `chore` Cloudflare Pages 어댑터 + edge runtime (`76ffc77`)
   - `@cloudflare/next-on-pages@1` + `vercel` devDep 설치
   - Next.js 15.5.15 → 15.5.2로 핀 (어댑터 peer-dep 상한)
