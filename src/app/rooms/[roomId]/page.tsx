@@ -6,6 +6,7 @@ import { getProfile } from "@/lib/db/profile";
 import { RoomShell } from "@/components/room/RoomShell";
 import type { Profile, Track } from "@/types/database";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 interface PageProps {

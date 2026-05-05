@@ -5,6 +5,7 @@ import { getSupabaseServer } from "@/lib/supabase/server";
 import { getPublicRooms } from "@/lib/db/rooms";
 import type { Room } from "@/types/database";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export default async function RoomsListPage() {
