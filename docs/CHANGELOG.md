@@ -2,6 +2,14 @@
 
 > 한 줄로 끝나는 변경은 여기로. 큰 변경은 `docs/ROADMAP.md` 또는 `docs/superpowers/specs/` 로.
 
+## 2026-05-09
+
+- `feat` 모바일 룸 핵심 행동 접근성 1차 개선
+  - 룸 중앙 상단에 상태별 `NEXT MOVE` 안내 추가
+  - 모바일 하단 고정 액션바 추가: 채팅 이동 / DJ 참여 / 곡 추가 / 스킵 / 줄 나가기
+  - YouTube 자동재생 실패 가능성에 대비해 "탭해서 재생" 힌트 추가
+  - `npm run typecheck`, `npm run build` 통과
+
 ## 2026-05-05
 
 - `docs` ROADMAP에 SOCIAL_ROOM_REVIEW 반영

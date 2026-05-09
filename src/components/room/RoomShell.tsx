@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
-import { advanceQueue, getDjQueue } from "@/lib/db/queue";
+import { advanceQueue, getDjQueue, joinDjQueue, leaveDjQueue, skipTrack } from "@/lib/db/queue";
 import { getProfile } from "@/lib/db/profile";
 import { joinRoom } from "@/lib/db/rooms";
 import { subscribeToPresence, subscribeToTable, type PresenceUser } from "@/lib/realtime";
@@ -15,6 +15,9 @@ import { ReactionBar } from "./ReactionBar";
 import { DJQueue } from "./DJQueue";
 import { ChatPanel } from "./ChatPanel";
 import { ParticipantsPanel } from "./ParticipantsPanel";
+import { AddTrackDialog } from "./AddTrackDialog";
+import { MobileRoomActionBar } from "./MobileRoomActionBar";
+import { RoomGuidance } from "./RoomGuidance";
 
 interface Props {
   initialRoom: Room;
@@ -39,11 +42,16 @@ export function RoomShell({
   const [me, setMe] = useState<Profile | null>(null);
   const [presenceUsers, setPresenceUsers] = useState<PresenceUser[]>([]);
   const [muted, setMuted] = useState(false);
+  const [queueBusy, setQueueBusy] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   const currentUserId = me?.id ?? null;
   const currentDj = queue[0] ?? null;
+  const myEntry = currentUserId ? queue.find((entry) => entry.user_id === currentUserId) : null;
   const isCurrentDj = currentDj?.user_id === currentUserId;
   const isMaster = isCurrentDj; // Only the current DJ reports track-end.
+  const noTrackPlaying = !track;
+  const myQueuePosition = myEntry ? queue.findIndex((entry) => entry.user_id === currentUserId) : -1;
 
   // ========== Resolve current user (auth) and ensure profile + room membership ==========
   useEffect(() => {
@@ -160,9 +168,39 @@ export function RoomShell({
     }
   }
 
+  async function onJoinQueue() {
+    if (!currentUserId || queueBusy) return;
+    setQueueBusy(true);
+    try {
+      await joinDjQueue(supabase, room.id);
+    } finally {
+      setQueueBusy(false);
+    }
+  }
+
+  async function onLeaveQueue() {
+    if (!currentUserId || queueBusy) return;
+    setQueueBusy(true);
+    try {
+      await leaveDjQueue(supabase, room.id);
+    } finally {
+      setQueueBusy(false);
+    }
+  }
+
+  async function onSkipTrack() {
+    if (!isCurrentDj || queueBusy) return;
+    setQueueBusy(true);
+    try {
+      await skipTrack(supabase, room.id);
+    } finally {
+      setQueueBusy(false);
+    }
+  }
+
   // ========== Layout ==========
   return (
-    <main className="relative min-h-[100dvh]">
+    <main className="relative min-h-[100dvh] pb-28 lg:pb-0">
       {/* Soft background */}
       <div className="orb h-[520px] w-[520px] left-[-200px] top-[-100px] bg-cyan-glow/20 animate-orb-drift" aria-hidden />
       <div
@@ -238,6 +276,19 @@ export function RoomShell({
 
           {/* Center column — Player + NowPlaying + Reactions */}
           <section className="lg:col-span-6 space-y-4 order-1 lg:order-2">
+            <RoomGuidance
+              currentUserId={currentUserId}
+              queueLength={queue.length}
+              isCurrentDj={isCurrentDj}
+              hasMyEntry={!!myEntry}
+              myQueuePosition={myQueuePosition}
+              noTrackPlaying={noTrackPlaying}
+              busy={queueBusy}
+              onJoinQueue={onJoinQueue}
+              onLeaveQueue={onLeaveQueue}
+              onAddTrack={() => setAddOpen(true)}
+              onSkipTrack={onSkipTrack}
+            />
             <YouTubePlayer
               track={track}
               isMaster={isMaster}
@@ -255,7 +306,9 @@ export function RoomShell({
 
           {/* Right column — Chat */}
           <section className="lg:col-span-3 order-3 h-[480px] lg:h-[640px]">
-            <ChatPanel roomId={room.id} currentUserId={currentUserId} />
+            <div id="room-chat" className="h-full scroll-mt-20">
+              <ChatPanel roomId={room.id} currentUserId={currentUserId} />
+            </div>
           </section>
 
           {/* Bottom — DJ Queue (full width) */}
@@ -269,6 +322,19 @@ export function RoomShell({
           </section>
         </div>
       </div>
+      <MobileRoomActionBar
+        currentUserId={currentUserId}
+        isCurrentDj={isCurrentDj}
+        hasMyEntry={!!myEntry}
+        myQueuePosition={myQueuePosition}
+        noTrackPlaying={noTrackPlaying}
+        busy={queueBusy}
+        onJoinQueue={onJoinQueue}
+        onLeaveQueue={onLeaveQueue}
+        onAddTrack={() => setAddOpen(true)}
+        onSkipTrack={onSkipTrack}
+      />
+      <AddTrackDialog roomId={room.id} open={addOpen} onOpenChange={setAddOpen} />
     </main>
   );
 }

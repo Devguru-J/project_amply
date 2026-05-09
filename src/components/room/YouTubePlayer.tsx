@@ -39,6 +39,7 @@ export function YouTubePlayer({ track, isMaster, muted, onEnded }: Props) {
   const onEndedRef = useRef(onEnded);
   const isMasterRef = useRef(isMaster);
   const [ready, setReady] = useState(false);
+  const [showPlayHint, setShowPlayHint] = useState(false);
 
   // Keep refs current so callbacks don't capture stale values.
   useEffect(() => {
@@ -91,6 +92,7 @@ export function YouTubePlayer({ track, isMaster, muted, onEnded }: Props) {
   useEffect(() => {
     if (!ready || !playerRef.current) return;
     if (!track) {
+      setShowPlayHint(false);
       try {
         playerRef.current.stopVideo();
       } catch {
@@ -100,6 +102,8 @@ export function YouTubePlayer({ track, isMaster, muted, onEnded }: Props) {
     }
     try {
       playerRef.current.loadVideoById(track.video_id);
+      const id = window.setTimeout(() => setShowPlayHint(true), 1200);
+      return () => window.clearTimeout(id);
     } catch {
       /* noop */
     }
@@ -116,6 +120,16 @@ export function YouTubePlayer({ track, isMaster, muted, onEnded }: Props) {
     }
   }, [ready, muted]);
 
+  function onPlayHint() {
+    try {
+      if (!muted) playerRef.current?.unMute();
+      playerRef.current?.playVideo();
+      setShowPlayHint(false);
+    } catch {
+      /* noop */
+    }
+  }
+
   return (
     <div className="bezel-shell">
       <div className="bezel-core overflow-hidden">
@@ -129,6 +143,15 @@ export function YouTubePlayer({ track, isMaster, muted, onEnded }: Props) {
             </div>
           )}
           <div ref={containerRef} className="absolute inset-0" />
+          {track && showPlayHint && (
+            <button
+              type="button"
+              onClick={onPlayHint}
+              className="absolute bottom-3 left-3 z-10 max-w-[calc(100%-1.5rem)] rounded-full bg-black/70 px-4 py-2 text-left text-xs font-medium text-foreground/85 ring-1 ring-white/15 backdrop-blur-md transition hover:bg-black/80"
+            >
+              소리가 안 나면 탭해서 재생
+            </button>
+          )}
         </div>
       </div>
     </div>
